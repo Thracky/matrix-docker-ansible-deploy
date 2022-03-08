@@ -70,6 +70,7 @@
     repo: "{{ matrix_appservice_irc_docker_repo }}"
     dest: "{{ matrix_appservice_irc_docker_src_files_path }}"
     force: "yes"
+    version: "{{ matrix_appservice_irc_docker_repo_branch }}"
   register: matrix_appservice_irc_git_pull_results
   when: "matrix_appservice_irc_enabled|bool and matrix_appservice_irc_container_image_self_build|bool"
 
