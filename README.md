@@ -73,6 +73,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.)
 
+- (optional) the [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) bridge for bridging Matrix to generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular
+
 - (optional) the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for bridging your Matrix server to SMS - see [docs/configuring-playbook-bridge-matrix-bridge-sms.md](docs/configuring-playbook-bridge-matrix-bridge-sms.md) for setup documentation
 
 - (optional) the [Heisenbridge](https://github.com/hifi/heisenbridge) for bridging your Matrix server to IRC bouncer-style - see [docs/configuring-playbook-bridge-heisenbridge.md](docs/configuring-playbook-bridge-heisenbridge.md) for setup documentation
@@ -150,5 +152,3 @@ When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up w
 ## Services by the community
 
 - [etke.cc](https://etke.cc) - matrix-docker-ansible-deploy and system stuff "as a service". That service will create your matrix homeserver on your domain and server (doesn't matter if it's cloud provider or on an old laptop in the corner of your room), (optional) maintains it (server's system updates, cleanup, security adjustments, tuning, etc.; matrix homeserver updates & maintenance) and (optional) provide full-featured email service for your domain
-
-- [GoMatrixHosting](https://gomatrixhosting.com) - matrix-docker-ansible-deploy "as a service" with [Ansible AWX](https://github.com/ansible/awx). Members can be assigned a server from DigitalOcean, or they can connect their on-premises server. This AWX system can manage the updates, configuration, import and export, backups, and monitoring on its own. For more information [see our GitLab group](https://gitlab.com/GoMatrixHosting) or come [visit us on Matrix](https://matrix.to/#/#general:gomatrixhosting.com).
