@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.54.0
+matrix_synapse_version: v1.60.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -74,7 +74,7 @@ matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.9/site
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
 # the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
-# and then change the specific host's `vars.yaml` file like this:
+# and then change the specific host's `vars.yml` file like this:
 # matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/<host>/homeserver.yaml.j2"
 matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
 matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
@@ -202,11 +202,18 @@ matrix_synapse_include_profile_data_on_invite: true
 
 # Controls whether people with access to the homeserver can register by themselves.
 matrix_synapse_enable_registration: false
+# Controls whether people with access to the homeserver can register by themselves without verification (email/msisdn/token)
+matrix_synapse_enable_registration_without_verification: false
 
 # reCAPTCHA API for validating registration attempts
 matrix_synapse_enable_registration_captcha: false
 matrix_synapse_recaptcha_public_key: ''
 matrix_synapse_recaptcha_private_key: ''
+
+# Requires an MSC3231 token for registration. Note that `matrix_synapse_enable_registration` must be set to `true`.
+# Tokens can be created via the API or through synapse-admin.
+# Disabling this option will not delete any tokens previously generated.
+matrix_synapse_registration_requires_token: false
 
 # Allows non-server-admin users to create groups on this server
 matrix_synapse_enable_group_creation: false
@@ -351,10 +358,13 @@ matrix_synapse_workers_presets:
   one-of-each:
     generic_workers_count: 1
     pusher_workers_count: 1
-    appservice_workers_count: 1
+    # appservice workers are deprecated since Synapse v1.59. This will be removed.
+    appservice_workers_count: 0
     federation_sender_workers_count: 1
     media_repository_workers_count: 1
     # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
+    # user_dir workers are deprecated since Synapse v1.59. This will be removed.
+    # See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
     user_dir_workers_count: 0
     frontend_proxy_workers_count: 1
 
@@ -376,7 +386,9 @@ matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 
 # matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
-matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
+# appservice workers are deprecated since Synapse v1.59. This will be removed.
+# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
+matrix_synapse_workers_appservice_workers_count: 0
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
 
 # matrix_synapse_workers_federation_sender_workers_count can only be 0 or 1 for now.
@@ -390,7 +402,9 @@ matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 
 # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
+# user_dir workers are deprecated since Synapse v1.59. This will be removed.
+# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
+matrix_synapse_workers_user_dir_workers_count: 0
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
 
@@ -525,7 +539,7 @@ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeserve
 # See: https://github.com/matrix-org/mjolnir#synapse-module
 matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: false
 matrix_synapse_ext_spam_checker_mjolnir_antispam_git_repository_url: "https://github.com/matrix-org/mjolnir"
-matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "70f353fbbad0af469b1001080dea194d512b2815"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "4008e3f65d3745b9307dd31f1c5aa80c13a61a58"
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
 # Flag messages sent by servers/users in the ban lists as spam. Currently
 # this means that spammy messages will appear as empty to users. Default
@@ -545,7 +559,7 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_enabled: false
-matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/digitalentity/matrix_encryption_disabler/1182388f7019e8ec1e28f035070c7919d0e4cc24/matrix_e2ee_filter.py"
+matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/digitalentity/matrix_encryption_disabler/cdc37a07441acb7c2a3288bcb29b376658d5e766/matrix_e2ee_filter.py"
 # A list of server domain names for which to deny encryption if the event sender's domain matches the domain in the list.
 # By default, with the configuration below, we prevent all homeserver users from initiating encryption in ANY room.
 matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of: ["{{ matrix_domain }}"]
@@ -620,10 +634,11 @@ matrix_synapse_redaction_retention_period: 7d
 matrix_synapse_user_ips_max_age: 28d
 
 
-matrix_synapse_rust_synapse_compress_state_docker_image: "devture/rust-synapse-compress-state:v0.1.0"
+matrix_synapse_rust_synapse_compress_state_docker_image: "registry.gitlab.com/mb-saces/rust-synapse-compress-state:latest"
 matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
 
 matrix_synapse_rust_synapse_compress_state_base_path: "{{ matrix_base_data_path }}/rust-synapse-compress-state"
+matrix_synapse_rust_synapse_compress_state_synapse_compress_state_in_container_path: "/usr/local/bin/synapse_compress_state"
 
 
 # Default Synapse configuration template which covers the generic use case.
