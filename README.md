@@ -55,7 +55,7 @@ Services that run on the server to make the various parts of your installation w
 | [nginx](http://nginx.org/) | ✓ | Web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md) | [Link](docs/configuring-playbook-nginx.md) |
 | [Let's Encrypt](https://letsencrypt.org/) | ✓ | Free  SSL certificate, which secures the connection to the Synapse server and the Element web UI | [Link](docs/configuring-playbook-ssl-certificates.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | x | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
-| [Exim](https://www.exim.org/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | - |
+| [Exim](https://www.exim.org/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
 | [Dimension](https://github.com/turt2live/matrix-dimension) | x | An open source integrations manager for matrix clients | [Link](docs/configuring-playbook-dimension.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | x | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | x | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
@@ -89,7 +89,8 @@ Bridges can be used to connect your matrix installation with third-party communi
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
-[mautrix-discord](https://github.com/mautrix/discord) | x | Bridge for bridging your Matrix server to [Discord](https://discord.com/) | [Link](docs/configuring-playbook-bridge-mautrix-discord.md) |
+| [mautrix-discord](https://github.com/mautrix/discord) | x | Bridge for bridging your Matrix server to [Discord](https://discord.com/) | [Link](docs/configuring-playbook-bridge-mautrix-discord.md) |
+| [mautrix-slack](https://github.com/mautrix/slack) | x | Bridge for bridging your Matrix server to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-mautrix-slack.md) |
 | [mautrix-telegram](https://github.com/mautrix/telegram) | x | Bridge for bridging your Matrix server to [Telegram](https://telegram.org/) | [Link](docs/configuring-playbook-bridge-mautrix-telegram.md) |
 | [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | x | Bridge for bridging your Matrix server to [WhatsApp](https://www.whatsapp.com/) | [Link](docs/configuring-playbook-bridge-mautrix-whatsapp.md) |
 | [mautrix-facebook](https://github.com/mautrix/facebook) | x | Bridge for bridging your Matrix server to [Facebook](https://facebook.com/) | [Link](docs/configuring-playbook-bridge-mautrix-facebook.md) |
@@ -129,7 +130,9 @@ Bots provide various additional functionality to your installation.
 | [Postmoogle](https://gitlab.com/etke.cc/postmoogle) | x | Email to matrix bot | [Link](docs/configuring-playbook-bot-postmoogle.md) |
 | [Go-NEB](https://github.com/matrix-org/go-neb) | x | A multi functional bot written in Go | [Link](docs/configuring-playbook-bot-go-neb.md) |
 | [Mjolnir](https://github.com/matrix-org/mjolnir) | x | A moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
+| [Draupnir](https://github.com/Gnuxie/Draupnir) | x | A moderation tool for Matrix (Fork of Mjolnir) | [Link](docs/configuring-playbook-bot-draupnir.md) |
 | [Buscarron](https://gitlab.com/etke.cc/buscarron) | x | Web forms (HTTP POST) to matrix | [Link](docs/configuring-playbook-bot-buscarron.md) |
+| [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) | x | ChatGPT from matrix | [Link](docs/configuring-playbook-bot-chatgpt.md) |
 
 ### Administration
 
