@@ -91,7 +91,10 @@
   when: "matrix_mautrix_hangouts_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-hangouts database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db {{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db {{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
+    creates: "{{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
+    removes: "{{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db"
   when: "matrix_mautrix_hangouts_stat_database.stat.exists"
 
 - name: Ensure mautrix-hangouts config.yaml installed
@@ -109,6 +112,21 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-hangouts support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_mautrix_hangouts_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
+- name: Ensure matrix-mautrix-hangouts container network is created
+  community.general.docker_network:
+    name: "{{ matrix_mautrix_hangouts_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-mautrix-hangouts.service installed
   ansible.builtin.template:

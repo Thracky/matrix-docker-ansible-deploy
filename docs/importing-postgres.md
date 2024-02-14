@@ -20,19 +20,19 @@ Before doing the actual import, **you need to upload your Postgres dump file to 
 
 ## Importing
 
-To import, run this command (make sure to replace `<server-path-to-postgres-dump.sql>` with a file path on your server):
+To import, run this command (make sure to replace `SERVER_PATH_TO_POSTGRES_DUMP_FILE` with a file path on your server):
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml \
---extra-vars='server_path_postgres_dump=<server-path-to-postgres-dump.sql> postgres_default_import_database=matrix' \
---tags=import-postgres
+just run-tags import-postgres \
+--extra-vars=server_path_postgres_dump=SERVER_PATH_TO_POSTGRES_DUMP_FILE \
+--extra-vars=postgres_default_import_database=matrix
 ```
 
 **Notes**:
 
-- `<server-path-to-postgres-dump.sql>` must be a file path to a Postgres dump file on the server (not on your local machine!)
+- `SERVER_PATH_TO_POSTGRES_DUMP_FILE` must be a file path to a Postgres dump file on the server (not on your local machine!)
 - `postgres_default_import_database` defaults to `matrix`, which is useful for importing multiple databases (for dumps made with `pg_dumpall`). If you're importing a single database (e.g. `synapse`), consider changing `postgres_default_import_database` accordingly
-
+- after importing a large database, it's a good idea to run [an `ANALYZE` operation](https://www.postgresql.org/docs/current/sql-analyze.html) to make Postgres rebuild its database statistics and optimize its query planner. You can easily do this via the playbook by running `just run-tags run-postgres-vacuum -e postgres_vacuum_preset=analyze` (see [Vacuuming PostgreSQL](maintenance-postgres.md#vacuuming-postgresql) for more details).
 
 ## Troubleshooting
 
@@ -86,7 +86,7 @@ In this case you can use the command suggested in the import task to clear the d
 # systemctl start matrix-postgres
 ```
 
-Now on your local machine run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-postgres` to prepare the database roles etc.
+Now on your local machine run `just run-tags setup-postgres` to prepare the database roles etc.
 
 If not, you probably get this error. `synapse` is the correct table owner, but the role is missing in database.
 ```

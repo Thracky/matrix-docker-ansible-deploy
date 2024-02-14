@@ -9,7 +9,7 @@ We try to stick to official images (provided by their respective projects) as mu
 
 These services are enabled and used by default, but you can turn them off, if you wish.
 
-- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Synapse](https://github.com/matrix-org/synapse) Matrix homeserver (optional)
+- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Synapse](https://github.com/element-hq/synapse) Matrix homeserver (optional)
 
 - [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
 
@@ -45,6 +45,8 @@ These services are not part of our default installation, but can be enabled by [
 - [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) - [matrix-registration](https://github.com/ZerataX/matrix-registration): a simple python application to have a token based matrix registration (optional)
 
 - [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) - the [mautrix-telegram](https://github.com/mautrix/telegram) bridge to [Telegram](https://telegram.org/) (optional)
+
+- [mautrix/gmessages](https://mau.dev/mautrix/gmessages/container_registry) - the [mautrix-gmessages](https://github.com/mautrix/gmessages) bridge to [Google Messages](https://messages.google.com/) (optional)
 
 - [mautrix/whatsapp](https://mau.dev/mautrix/whatsapp/container_registry) - the [mautrix-whatsapp](https://github.com/mautrix/whatsapp) bridge to [Whatsapp](https://www.whatsapp.com/) (optional)
 
@@ -106,13 +108,15 @@ These services are not part of our default installation, but can be enabled by [
 
 - [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)
 
+- [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) - the [Draupnir](https://github.com/the-draupnir-project/Draupnir/) moderation bot (optional)
+
 - [awesometechnologies/synapse-admin](https://hub.docker.com/r/awesometechnologies/synapse-admin) - the [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
 
 - [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) - [Prometheus](https://github.com/prometheus/prometheus/) is a systems and service monitoring system
 
 - [prom/node-exporter](https://hub.docker.com/r/prom/node-exporter/) - [Prometheus Node Exporter](https://github.com/prometheus/node_exporter/) is an addon for Prometheus that gathers standard system metrics
 
-- [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) - [Grafana](https://github.com/grafana/grafana/) is a graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/matrix-org/synapse/tree/master/contrib/grafana) and  [Node Exporter](https://github.com/rfrail3/grafana-dashboards)
+- [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) - [Grafana](https://github.com/grafana/grafana/) is a graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/element-hq/synapse/tree/master/contrib/grafana) and  [Node Exporter](https://github.com/rfrail3/grafana-dashboards)
 
 - [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) - [Sygnal](https://github.com/matrix-org/sygnal) is a reference Push Gateway for Matrix
 

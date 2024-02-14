@@ -141,6 +141,10 @@ allow_public_rooms_over_federation: {{ matrix_synapse_allow_public_rooms_over_fe
 #
 default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 
+# Set to true to automatically forget rooms for users when they leave them, either
+# normally or via a kick or ban. Defaults to false.
+forget_rooms_on_leave: {{ matrix_synapse_forget_rooms_on_leave | to_json }}
+
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
 #
 #gc_thresholds: [700, 10, 10]
@@ -338,7 +342,7 @@ listeners:
 {% if matrix_synapse_workers_enabled %}
 
 {% if matrix_synapse_replication_listener_enabled %}
-  # c.f. https://github.com/matrix-org/synapse/tree/master/docs/workers.md
+  # c.f. https://github.com/element-hq/synapse/tree/master/docs/workers.md
   # HTTP replication: for the workers to send data to the main synapse process
   - port: {{ matrix_synapse_replication_http_port }}
     bind_addresses: ['0.0.0.0']
@@ -347,7 +351,7 @@ listeners:
       - names: [replication]
 {% endif %}
 
-# c.f. https://github.com/matrix-org/synapse/tree/master/contrib/systemd-with-workers/README.md
+# c.f. https://github.com/element-hq/synapse/tree/master/contrib/systemd-with-workers/README.md
 worker_app: synapse.app.homeserver
 daemonize: false
 {% endif %}
@@ -505,7 +509,12 @@ limit_remote_rooms:
 #
 #redaction_retention_period: 28d
 
-redaction_retention_period: {{ matrix_synapse_redaction_retention_period }}
+redaction_retention_period: {{ matrix_synapse_redaction_retention_period | to_json }}
+
+# How long to keep locally forgotten rooms before purging them from the DB.
+#
+#forgotten_room_retention_period: 28d
+forgotten_room_retention_period: {{ matrix_synapse_forgotten_room_retention_period | to_json }}
 
 # How long to track users' last seen time and IPs in the database.
 #
@@ -513,7 +522,7 @@ redaction_retention_period: {{ matrix_synapse_redaction_retention_period }}
 #
 #user_ips_max_age: 14d
 
-user_ips_max_age: {{ matrix_synapse_user_ips_max_age }}
+user_ips_max_age: {{ matrix_synapse_user_ips_max_age | to_json }}
 
 # Inhibits the /requestToken endpoints from returning an error that might leak
 # information about whether an e-mail address is in use or not on this
@@ -555,6 +564,9 @@ templates:
   # information about using custom templates.
   #
   #custom_template_directory: /path/to/custom/templates/
+  {% if matrix_synapse_templates_custom_template_directory %}
+  custom_template_directory: {{ matrix_synapse_templates_custom_template_directory | to_json }}
+  {% endif %}
 
 # List of rooms to exclude from sync responses. This is useful for server
 # administrators wishing to group users into a room without these users being able
@@ -748,49 +760,48 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 # The number of events to cache in memory. Not affected by
 # caches.global_factor.
 #
-event_cache_size: "{{ matrix_synapse_event_cache_size }}"
+event_cache_size: {{ matrix_synapse_event_cache_size | to_json }}
 
 caches:
-   # Controls the global cache factor, which is the default cache factor
-   # for all caches if a specific factor for that cache is not otherwise
-   # set.
-   #
-   # This can also be set by the "SYNAPSE_CACHE_FACTOR" environment
-   # variable. Setting by environment variable takes priority over
-   # setting through the config file.
-   #
-   # Defaults to 0.5, which will half the size of all caches.
-   #
-   global_factor: {{ matrix_synapse_caches_global_factor }}
-
-   # A dictionary of cache name to cache factor for that individual
-   # cache. Overrides the global cache factor for a given cache.
-   #
-   # These can also be set through environment variables comprised
-   # of "SYNAPSE_CACHE_FACTOR_" + the name of the cache in capital
-   # letters and underscores. Setting by environment variable
-   # takes priority over setting through the config file.
-   # Ex. SYNAPSE_CACHE_FACTOR_GET_USERS_WHO_SHARE_ROOM_WITH_USER=2.0
-   #
-   # Some caches have '*' and other characters that are not
-   # alphanumeric or underscores. These caches can be named with or
-   # without the special characters stripped. For example, to specify
-   # the cache factor for `*stateGroupCache*` via an environment
-   # variable would be `SYNAPSE_CACHE_FACTOR_STATEGROUPCACHE=2.0`.
-   #
-   per_cache_factors:
-     #get_users_who_share_room_with_user: 2.0
+  # Controls the global cache factor, which is the default cache factor
+  # for all caches if a specific factor for that cache is not otherwise
+  # set.
+  #
+  # This can also be set by the "SYNAPSE_CACHE_FACTOR" environment
+  # variable. Setting by environment variable takes priority over
+  # setting through the config file.
+  #
+  # Defaults to 0.5, which will half the size of all caches.
+  #
+  global_factor: {{ matrix_synapse_caches_global_factor | to_json }}
+  # A dictionary of cache name to cache factor for that individual
+  # cache. Overrides the global cache factor for a given cache.
+  #
+  # These can also be set through environment variables comprised
+  # of "SYNAPSE_CACHE_FACTOR_" + the name of the cache in capital
+  # letters and underscores. Setting by environment variable
+  # takes priority over setting through the config file.
+  # Ex. SYNAPSE_CACHE_FACTOR_GET_USERS_WHO_SHARE_ROOM_WITH_USER=2.0
+  #
+  # Some caches have '*' and other characters that are not
+  # alphanumeric or underscores. These caches can be named with or
+  # without the special characters stripped. For example, to specify
+  # the cache factor for `*stateGroupCache*` via an environment
+  # variable would be `SYNAPSE_CACHE_FACTOR_STATEGROUPCACHE=2.0`.
+  #
+  per_cache_factors:
+    #get_users_who_share_room_with_user: 2.0
 
   # Controls whether cache entries are evicted after a specified time
   # period. Defaults to true. Uncomment to disable this feature.
   #
-  #expire_caches: false
+  expire_caches: {{ matrix_synapse_caches_expire_caches | to_json }}
 
   # If expire_caches is enabled, this flag controls how long an entry can
   # be in a cache without having been accessed before being evicted.
   # Defaults to 30m. Uncomment to set a different time to live for cache entries.
   #
-  #cache_entry_ttl: 30m
+  cache_entry_ttl: {{ matrix_synapse_caches_cache_entry_ttl | to_json }}
 
   # Controls how long the results of a /sync request are cached for after
   # a successful response is returned. A higher duration can help clients with
@@ -799,7 +810,12 @@ caches:
   # By default, this is zero, which means that sync responses are not cached
   # at all.
   #
-  #sync_response_cache_duration: 2m
+  sync_response_cache_duration: {{ matrix_synapse_caches_sync_response_cache_duration | to_json }}
+
+  cache_autotuning:
+    max_cache_memory_usage: {{ ((matrix_synapse_cache_autotuning_max_cache_memory_usage | int | to_json) if matrix_synapse_cache_autotuning_max_cache_memory_usage else '') }}
+    target_cache_memory_usage: {{ ((matrix_synapse_cache_autotuning_target_cache_memory_usage | int | to_json) if matrix_synapse_cache_autotuning_target_cache_memory_usage else '') }}
+    min_cache_ttl: {{ matrix_synapse_cache_autotuning_min_cache_ttl | to_json }}
 
 
 ## Database ##
@@ -862,8 +878,8 @@ database:
     database: "{{ matrix_synapse_database_database }}"
     host: "{{ matrix_synapse_database_host }}"
     port: {{ matrix_synapse_database_port }}
-    cp_min: 5
-    cp_max: 10
+    cp_min: {{ matrix_synapse_database_cp_min | to_json }}
+    cp_max: {{ matrix_synapse_database_cp_max | to_json }}
 
 
 ## Logging ##
@@ -1220,12 +1236,12 @@ oembed:
 # This homeserver's ReCAPTCHA public key. Must be specified if
 # enable_registration_captcha is enabled.
 #
-recaptcha_public_key: {{ matrix_synapse_recaptcha_public_key|to_json }}
+recaptcha_public_key: {{ matrix_synapse_recaptcha_public_key|string|to_json }}
 
 # This homeserver's ReCAPTCHA private key. Must be specified if
 # enable_registration_captcha is enabled.
 #
-recaptcha_private_key: {{ matrix_synapse_recaptcha_private_key|to_json }}
+recaptcha_private_key: {{ matrix_synapse_recaptcha_private_key|string|to_json }}
 
 # Uncomment to enable ReCaptcha checks when registering, preventing signup
 # unless a captcha is answered. Requires a valid ReCaptcha
@@ -2078,9 +2094,9 @@ saml2_config:
 # use 'oidc' for the idp_id to ensure that existing users continue to be
 # recognised.)
 #
-oidc_providers:
+{% if matrix_synapse_oidc_enabled and matrix_synapse_oidc_providers | length > 0 %}
   # Generic example
-  #
+  #matrix_synapse_oidc_providers:
   #- idp_id: my_idp
   #  idp_name: "My OpenID provider"
   #  idp_icon: "mxc://example.com/mediaid"
@@ -2104,6 +2120,8 @@ oidc_providers:
   #  attribute_requirements:
   #    - attribute: userGroup
   #      value: "synapseUsers"
+oidc_providers: {{ matrix_synapse_oidc_providers }}
+{% endif %}
 
 
 # Enable Central Authentication Service (CAS) for registration and login.
@@ -2238,7 +2256,7 @@ sso:
 password_config:
    # Uncomment to disable password login
    #
-   #enabled: false
+   enabled: {{ matrix_synapse_password_config_enabled|to_json }}
 
    # Uncomment to disable authentication against the local password
    # database. This is ignored if `enabled` is false, and is only useful
@@ -2344,7 +2362,7 @@ email:
   # must present a certificate that is valid for 'smtp_host'. If this option
   # is set to false, TLS will not be used.
   #
-  #enable_tls: false
+  enable_tls: {{ matrix_synapse_email_smtp_enable_tls|to_json }}
 
   # notif_from defines the "From" address to use when sending emails.
   # It must be set if email sending is enabled.
@@ -2363,7 +2381,7 @@ email:
   # subjects. It defaults to 'Matrix'.
   #
   #app_name: my_branded_matrix_server
-  app_name: Matrix
+  app_name: {{ matrix_synapse_email_app_name | to_json }}
 
   # Uncomment the following to enable sending emails for messages that the user
   # has missed. Disabled by default.
@@ -2470,7 +2488,7 @@ email:
 # ex. LDAP, external tokens, etc.
 #
 # For more information and known implementations, please see
-# https://github.com/matrix-org/synapse/blob/master/docs/password_auth_providers.md
+# https://github.com/element-hq/synapse/blob/master/docs/password_auth_providers.md
 #
 # Note: instances wishing to use SAML or CAS authentication should
 # instead use the `saml2_config` or `cas_config` options,
@@ -2512,7 +2530,7 @@ password_providers:
     config:
       enabled: true
       mode: {{ matrix_synapse_ext_password_provider_ldap_mode | string | to_json }}
-      uri: {{ matrix_synapse_ext_password_provider_ldap_uri | string|to_json }}
+      uri: {{ matrix_synapse_ext_password_provider_ldap_uri | to_json }}
       start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|to_json }}
       base: {{ matrix_synapse_ext_password_provider_ldap_base | string|to_json }}
       active_directory: {{ matrix_synapse_ext_password_provider_ldap_active_directory|to_json }}
@@ -2563,20 +2581,6 @@ push:
   #group_unread_count_by_room: false
 
 
-# Spam checkers are third-party modules that can block specific actions
-# of local users, such as creating rooms and registering undesirable
-# usernames, as well as remote users by redacting incoming events.
-#
-# spam_checker:
-   #- module: "my_custom_project.SuperSpamChecker"
-   #  config:
-   #    example_option: 'things'
-   #- module: "some_other_project.BadEventStopper"
-   #  config:
-   #    example_stop_events_from: ['@bad:example.com']
-spam_checker: {{ matrix_synapse_spam_checker|to_json }}
-
-
 ## Rooms ##
 
 # Controls whether locally-created rooms should be end-to-end encrypted by
@@ -2623,7 +2627,7 @@ user_directory:
     # Uncomment to return search results containing all known users, even if that
     # user does not share a room with the requester.
     #
-    #search_all_users: true
+    search_all_users: {{ matrix_synapse_user_directory_search_all_users | to_json }}
 
     # Defines whether to prefer local users in search query results.
     # If True, local users are more likely to appear above remote users
@@ -2632,7 +2636,7 @@ user_directory:
     # Uncomment to prefer local over remote users in user directory search
     # results.
     #
-    #prefer_local_users: true
+    prefer_local_users: {{ matrix_synapse_user_directory_prefer_local_users | to_json }}
 
 
 # User Consent configuration

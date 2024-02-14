@@ -16,8 +16,8 @@
     dest: "{{ matrix_synapse_ext_path }}/shared_secret_authenticator.py"
     force: true
     mode: 0440
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
   register: result
   retries: "{{ devture_playbook_help_geturl_retries_count }}"
   delay: "{{ devture_playbook_help_geturl_retries_delay }}"
@@ -43,9 +43,9 @@
         ["--mount type=bind,src={{ matrix_synapse_ext_path }}/shared_secret_authenticator.py,dst={{ matrix_synapse_in_container_python_packages_path }}/shared_secret_authenticator.py,ro"]
       }}
 
-    matrix_synapse_additional_loggers: >
+    matrix_synapse_additional_loggers_auto: >
       {{
-        matrix_synapse_additional_loggers
+        matrix_synapse_additional_loggers_auto
         +
         [{'name': 'shared_secret_authenticator', 'level': 'INFO'}]
       }}
